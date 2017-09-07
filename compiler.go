@@ -2,7 +2,6 @@ package rgxp
 
 import (
 	"regexp"
-	"fmt"
 	"strings"
 	"github.com/pkg/errors"
 )
@@ -19,9 +18,10 @@ func (stdRegexCompiler) Compile(pattern string) (*regexp.Regexp, error) {
 	return regexp.Compile(pattern)
 }
 
-// CompileAll creates slice of Regexp objects compiled from input slice of patterns
-// When during compilation any of patterns caused compilation error result slice will be empty
-// and error value will include list of compiler errors
+// CompileAll creates slice of Regexp objects compiled from input slice of patterns.
+//
+// If during compilation any of patterns caused compilation error result slice will be empty
+// and error value will contain list of compiler errors separated by comma
 func CompileAll(patterns []string) (result []*regexp.Regexp, err error) {
 	cErrors := []string{}
 	for _, pattern := range patterns {
@@ -35,7 +35,7 @@ func CompileAll(patterns []string) (result []*regexp.Regexp, err error) {
 		result = append(result, compiled)
 	}
 	if len(cErrors) > 0 {
-		err = errors.New(fmt.Sprintf("compilation errors: %s", strings.Join(cErrors, ", ")))
+		err = errors.New(strings.Join(cErrors, ", "))
 	}
 	return
 }

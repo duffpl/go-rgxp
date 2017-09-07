@@ -10,14 +10,14 @@ import (
 	"reflect"
 )
 
-func TestCompileMultiple(t *testing.T) {
+func TestCompileAll(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	originalCompiler := compiler
 	defer func() {
 		ctrl.Finish()
 		compiler = originalCompiler
 	}()
-	t.Run("CompileNoErrors", func(t *testing.T) {
+	t.Run("NoErrors", func(t *testing.T) {
 		mockRegexes := []mockRegex{
 			{"test-pattern", &regexp.Regexp{}, nil},
 			{"other-test-pattern", &regexp.Regexp{}, nil},
@@ -29,14 +29,14 @@ func TestCompileMultiple(t *testing.T) {
 		assert.Equal(t, result, expectedCompilerOutput)
 		assert.Nil(t, err)
 	})
-	t.Run("CompileSomeWithErrors", func(t *testing.T) {
+	t.Run("SomeErrors", func(t *testing.T) {
 		//err = errors.New(fmt.Sprintf("invalid patterns: %s", strings.Join(compileErrors, ",")))
 		mockRegexes := []mockRegex{
 			{pattern: "error-pattern", rx: nil, err: errors.New("bad pattern!")},
 			{pattern: "other-error-pattern", rx: nil, err: errors.New("also bad pattern!")},
 			{pattern: "ok-pattern", rx: &regexp.Regexp{}, err: nil},
 		}
-		expectedErrorMessage := "compilation errors: bad pattern!, also bad pattern!"
+		expectedErrorMessage := "bad pattern!, also bad pattern!"
 		compilerInput := getMockCompilerInput(mockRegexes)
 		compiler = getMockCompiler(ctrl, mockRegexes)
 		result, err := CompileAll(compilerInput)
@@ -71,5 +71,5 @@ func ExampleCompileAll_errors() {
 
 	// Output:
 	// []
-	// compilation errors: error parsing regexp: missing closing ): `(`, error parsing regexp: missing closing ]: `[`
+	// error parsing regexp: missing closing ): `(`, error parsing regexp: missing closing ]: `[`
 }
