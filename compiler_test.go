@@ -59,7 +59,8 @@ func ExampleCompileAll() {
 	// patterns *regexp.Regexp
 }
 
-func ExampleCompileAll2() {
+// If any of patterns failed compilation result will be empty slice and list of compilation errors
+func ExampleCompileAll_errors() {
 	patterns := []string{
 		"(", "ok",
 	}
