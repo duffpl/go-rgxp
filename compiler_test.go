@@ -45,6 +45,43 @@ func TestCompileAll(t *testing.T) {
 	})
 }
 
+func TestMustCompileAll(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	originalCompiler := compiler
+	defer func() {
+		compiler = originalCompiler
+		ctrl.Finish()
+	}()
+	t.Run("PanicOnError", func(t *testing.T) {
+		mockRegexes := []mockRegex{
+			{pattern: "error-pattern", rx: nil, err: errors.New("bad pattern!")},
+			{pattern: "ok-pattern", rx: &regexp.Regexp{}, err: nil},
+		}
+		compilerInput := getMockCompilerInput(mockRegexes)
+		compiler = getMockCompiler(ctrl, mockRegexes)
+		panicked := false
+		func() {
+			defer func() {
+				if r := recover(); r != nil {
+					panicked = true
+				}
+			}()
+			MustCompileAll(compilerInput)
+		}()
+		assert.True(t, panicked)
+	})
+	t.Run("NoErrors", func(t *testing.T) {
+		mockRegexes := []mockRegex{
+			{pattern: "ok-pattern", rx: &regexp.Regexp{}, err: nil},
+			{pattern: "another-ok-pattern", rx: &regexp.Regexp{}, err: nil},
+		}
+		compilerInput := getMockCompilerInput(mockRegexes)
+		compiler = getMockCompiler(ctrl, mockRegexes)
+		result := MustCompileAll(compilerInput)
+		assert.Equal(t, result, getMockCompilerRegexOutput(mockRegexes))
+	})
+}
+
 func ExampleCompileAll() {
 	patterns := []string{
 		"some", "patterns",
@@ -72,4 +109,44 @@ func ExampleCompileAll_errors() {
 	// Output:
 	// []
 	// error parsing regexp: missing closing ): `(`, error parsing regexp: missing closing ]: `[`
+}
+
+// Returns slice of compiled Regexps. Can be coupled with matchers nicely
+func ExampleMustCompileAll() {
+	patterns := []string{
+		"all", "should", "match",
+	}
+	input := "all should match"
+	fmt.Println(MatchAll(MustCompileAll(patterns), input))
+
+	patterns = []string{
+		"just", "one", "m.*?ch", "is", "enough",
+	}
+	input = "match me"
+	fmt.Println(MatchAny(MustCompileAll(patterns), input))
+
+	// Output:
+	// true
+	// true
+}
+
+// Panics if any of patterns errored during compilation
+func ExampleMustCompileAll_error() {
+
+	patterns := []string{
+		"ok", "*",
+	}
+	func() {
+		defer func() {
+			if r := recover(); r != nil {
+				fmt.Println("Something really bad happened")
+				fmt.Println(r)
+			}
+		}()
+		MustCompileAll(patterns)
+	}()
+
+	// Output:
+	// Something really bad happened
+	// rgxp: CompileAll: error parsing regexp: missing argument to repetition operator: `*`
 }

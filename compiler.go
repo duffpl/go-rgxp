@@ -39,3 +39,14 @@ func CompileAll(patterns []string) (result []*regexp.Regexp, err error) {
 	}
 	return
 }
+
+// MustCompileAll is like CompileAll but panics if any of patterns cannot be parsed.
+//
+// Can be nicely used along with matchers at cost of sacrificing error checking <sad face>
+func MustCompileAll(patterns []string) (result []*regexp.Regexp) {
+	result, err := CompileAll(patterns)
+	if err != nil {
+		panic("rgxp: CompileAll: " + err.Error())
+	}
+	return
+}
