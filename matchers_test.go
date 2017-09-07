@@ -45,6 +45,7 @@ func TestMatchers(t *testing.T) {
 
 func ExampleMatchAny() {
 	input := "test data"
+
 	fmt.Println(MatchAny([]*regexp.Regexp{
 		regexp.MustCompile("only"),
 		regexp.MustCompile("one"),
@@ -52,11 +53,13 @@ func ExampleMatchAny() {
 		regexp.MustCompile("match"),
 		regexp.MustCompile("test data"),
 	}, input))
+
 	fmt.Println(MatchAny([]*regexp.Regexp{
 		regexp.MustCompile("no"),
 		regexp.MustCompile("match"),
 		regexp.MustCompile("here"),
 	}, input))
+
 	// Output:
 	// true
 	// false
@@ -64,17 +67,20 @@ func ExampleMatchAny() {
 
 func ExampleMatchAll() {
 	input := "all must match"
+
 	fmt.Println(MatchAll([]*regexp.Regexp{
 		regexp.MustCompile("all"),
 		regexp.MustCompile("must"),
 		regexp.MustCompile("match"),
 	}, input))
+
 	fmt.Println(MatchAll([]*regexp.Regexp{
 		regexp.MustCompile("all"),
 		regexp.MustCompile("must"),
 		regexp.MustCompile("match"),
 		regexp.MustCompile("no exceptions"),
 	}, input))
+
 	// Output:
 	// true
 	// false

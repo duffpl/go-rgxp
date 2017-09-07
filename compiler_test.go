@@ -49,9 +49,11 @@ func ExampleCompileAll() {
 	patterns := []string{
 		"some", "patterns",
 	}
-	rx, _ := CompileAll(patterns)
-	fmt.Println(rx[0], reflect.TypeOf(rx[0]))
-	fmt.Println(rx[1], reflect.TypeOf(rx[1]))
+
+	regexps, _ := CompileAll(patterns)
+	fmt.Println(regexps[0], reflect.TypeOf(regexps[0]))
+	fmt.Println(regexps[1], reflect.TypeOf(regexps[1]))
+
 	// Output:
 	// some *regexp.Regexp
 	// patterns *regexp.Regexp
@@ -61,9 +63,11 @@ func ExampleCompileAll2() {
 	patterns := []string{
 		"(", "ok",
 	}
-	rx, err := CompileAll(patterns)
-	fmt.Println(rx)
+
+	regexps, err := CompileAll(patterns)
+	fmt.Println(regexps)
 	fmt.Println(err)
+
 	// Output:
 	// []
 	// compilation errors: error parsing regexp: missing closing ): `(`

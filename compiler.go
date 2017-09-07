@@ -22,7 +22,7 @@ func (stdRegexCompiler) Compile(pattern string) (*regexp.Regexp, error) {
 // CompileAll creates slice of Regexp objects compiled from input slice of patterns
 // When during compilation any of patterns caused compilation error result slice will be empty
 // and error value will include list of compiler errors
-func CompileAll(patterns []string) (allCompiled []*regexp.Regexp, err error) {
+func CompileAll(patterns []string) (result []*regexp.Regexp, err error) {
 	cErrors := []string{}
 	for _, pattern := range patterns {
 		compiled, cErr := compiler.Compile(pattern)
@@ -32,7 +32,7 @@ func CompileAll(patterns []string) (allCompiled []*regexp.Regexp, err error) {
 		if len(cErrors) > 0 {
 			continue
 		}
-		allCompiled = append(allCompiled, compiled)
+		result = append(result, compiled)
 	}
 	if len(cErrors) > 0 {
 		err = errors.New(fmt.Sprintf("compilation errors: %s", strings.Join(cErrors, ", ")))
