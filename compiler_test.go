@@ -59,10 +59,10 @@ func ExampleCompileAll() {
 	// patterns *regexp.Regexp
 }
 
-// If any of patterns failed compilation result will be empty slice and list of compilation errors
+// If any of patterns failed compilation result will be empty slice and list of compilation errors separated by comma
 func ExampleCompileAll_errors() {
 	patterns := []string{
-		"(", "ok",
+		"(", "ok", ":[",
 	}
 
 	regexps, err := CompileAll(patterns)
@@ -71,5 +71,5 @@ func ExampleCompileAll_errors() {
 
 	// Output:
 	// []
-	// compilation errors: error parsing regexp: missing closing ): `(`
+	// compilation errors: error parsing regexp: missing closing ): `(`, error parsing regexp: missing closing ]: `[`
 }
