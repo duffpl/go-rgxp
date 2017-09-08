@@ -97,7 +97,7 @@ func ExampleCompileAll() {
 }
 
 // If any of patterns failed compilation result will be empty slice and list of compilation errors separated by comma
-func ExampleCompileAll_errors() {
+func ExampleCompileAll_error() {
 	patterns := []string{
 		"(", "ok", ":[",
 	}
@@ -136,15 +136,13 @@ func ExampleMustCompileAll_error() {
 	patterns := []string{
 		"ok", "*",
 	}
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Println("Something really bad happened")
-				fmt.Println(r)
-			}
-		}()
-		MustCompileAll(patterns)
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Println("Something really bad happened")
+			fmt.Println(r)
+		}
 	}()
+	MustCompileAll(patterns)
 
 	// Output:
 	// Something really bad happened
